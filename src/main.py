@@ -9,7 +9,7 @@ if __name__ == "__main__":
     
     action = menu()
 
-    if action == "credits":
+    if action == "credits": 
         credits_screen()
     
     if action == "play":

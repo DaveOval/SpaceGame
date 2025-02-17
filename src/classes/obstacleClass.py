@@ -16,11 +16,11 @@ class Obstacle( pygame.sprite.Sprite ):
             self.kill()
 
 METEOR_IMAGE = "assets/images/obstacles/meteor.png"
-def MeteorObstacle(Obstacle):
+class MeteorObstacle(Obstacle):
     def __init__(self, x, y):
         super().__init__(x, y, "assets/images/obstacles/meteor.png", 1, (50, 50))
 
 MINE_IMAGE = "assets/images/obstacles/mine.png"
-def MineObstacle(Obstacle):
+class MineObstacle(Obstacle):
     def __init__(self, x, y):
         super().__init__(x, y, "assets/images/obstacles/mine.png", 2, (50, 50))

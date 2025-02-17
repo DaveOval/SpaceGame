@@ -1,7 +1,7 @@
 # Game Settings
 WIDTH = 800
 HEIGHT = 600
-FPS = 60
+FPS = 30
 
 
 # Colors
