@@ -48,20 +48,75 @@ class Game:
             if self.selected_ship.health <= 0:
                 self.game_over()
 
-    def spawn_enemies(self):
+        # Collision between enemies and player
+        if pygame.sprite.spritecollide(self.selected_ship, self.enemies_group, False):
+            self.selected_ship.health -= 10
+            if self.selected_ship.health <= 0:
+                self.game_over()
+
+    def spawn_enemies(self, level=1, difficulty="normal"):
         """
         Spawn enemies at random positions at the top of the screen at set intervals.
+        Probabilidad de aparición basada en el nivel y dificultad.
+
+        Dificultades:
+        - "easy": Más LightEnemy, menos HeavyEnemy
+        - "normal": Distribución balanceada
+        - "hard": Más MediumEnemy y HeavyEnemy
+
+        Probability of enemy types:
+        - LightEnemy: Variable
+        - MediumEnemy: Variable
+        - HeavyEnemy: Variable
         """
+        # Base probability of enemy types
+        enemy_probabilities = {
+            1: [50, 30, 20],  # Level 1
+            2: [40, 30, 30],  # Level 2
+            3: [30, 30, 40],  # Level 3
+            4: [20, 30, 50],  # Level 4
+            5: [10, 30, 60]   # Level 5 o more
+        }
+        # Adjust based on difficulty
+        difficulty_modifier = {
+            "easy": [10, -10, -10],  # Más Light, menos Heavy y Medium
+            "normal": [0, 0, 0],  # Sin cambios
+            "hard": [-10, +10, +10]  # Más Medium y Heavy, menos Light
+        }
+
+        # Calculate adjusted probabilities
+        lightProb, mediumProb, heavyProb = enemy_probabilities.get(level, [10, 30, 60])
+
+        # Adjust probabilities based on difficulty
+        diff_modifier = difficulty_modifier.get(difficulty, [0, 0, 0])
+        lightProb = max(0, lightProb + diff_modifier[0])
+        mediumProb = max(0, mediumProb + diff_modifier[1])
+        heavyProb = max(0, heavyProb + diff_modifier[2])
+
+        # Normalize probabilities
+        total = lightProb + mediumProb + heavyProb
+        if total > 0:
+            lightProb = int((lightProb / total) * 100)
+            mediumProb = int((mediumProb / total) * 100)
+            heavyProb = int((heavyProb / total) * 100)
+
+        # Spawn enemies
         current_time = pygame.time.get_ticks()
         if current_time - self.last_enemy_spawn > self.enemy_spawn_rate:
-            enemy_type = random.choice([LightEnemy, MediumEnemy, HeavyEnemy])
-            x = random.randint(50, WIDTH - 50)  # Ensure enemy spawns within screen bounds
-            y = -50  # Start off-screen
+            enemy_type = random.choices(
+                [LightEnemy, MediumEnemy, HeavyEnemy],
+                weights=[lightProb, mediumProb, heavyProb],
+                k=1
+            )[0]
+
+            x = random.randint(50, WIDTH - 50)  # Spawn dentro de los límites de la pantalla
+            y = -50  # Iniciar fuera de la pantalla
             enemy = enemy_type(x, y)
+
             self.enemies_group.add(enemy)
             self.all_sprites.add(enemy)
             self.last_enemy_spawn = current_time
-
+        
     def spawn_obstacle(self):
         """
         Spawn obstacles at random positions at the top of the screen at set intervals.
