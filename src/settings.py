@@ -24,3 +24,7 @@ LOADING_IMAGE = "assets/images/loading_screen.png"
 
 # Credits screen image
 CREDITS_IMAGE = "assets/images/credits_screen.png"
+
+# Game over image
+
+GAME_OVER_IMAGE = "assets/images/game_over_screen.jpeg"
