@@ -23,6 +23,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.level = 1
+        self.score = 0
+        self.enemies_killed = 0
+        self.level_threshold = 10  # Enemigos que hay que derrotar para subir de nivel
 
         # Enemy spawn settings
         self.enemy_spawn_rate = 1000  # Spawn enemy every 1000ms
@@ -31,6 +34,9 @@ class Game:
         # Obstacle spawn settings
         self.obstacle_spawn_rate = 5000  # Spawn obstacle every 5000ms
         self.last_obstacle_spawn = pygame.time.get_ticks()
+
+        # Font for score and level display
+        self.font = pygame.font.Font(None, 36)
 
     def check_collisions(self):
         """
@@ -41,6 +47,12 @@ class Game:
             enemies_hit = pygame.sprite.spritecollide(bullet, self.enemies_group, False)
             for enemy in enemies_hit:
                 enemy.take_damage(10)
+                if enemy.health <= 0:
+                    self.enemies_killed += 1
+                    self.score += 10
+                    # Check if we should level up
+                    if self.enemies_killed >= self.level_threshold:
+                        self.level_up()
                 bullet.kill()
 
         # Collision between player and obstacles
@@ -54,6 +66,38 @@ class Game:
             self.selected_ship.health -= 10
             if self.selected_ship.health <= 0:
                 self.game_over()
+
+    def level_up(self):
+        """
+        Increase the level and adjust game difficulty
+        """
+        self.level += 1
+        self.enemies_killed = 0
+        self.level_threshold += 5  # Aumentar el umbral para el siguiente nivel
+        
+        # Aumentar la dificultad
+        self.enemy_spawn_rate = max(300, self.enemy_spawn_rate - 100)  # Más rápido spawn de enemigos
+        self.obstacle_spawn_rate = max(2000, self.obstacle_spawn_rate - 500)  # Más obstáculos
+        
+        # Limpiar la pantalla de enemigos y obstáculos
+        for enemy in self.enemies_group:
+            enemy.kill()
+        for obstacle in self.obstacles_group:
+            obstacle.kill()
+            
+        # Mostrar mensaje de nivel
+        self.show_level_up_message()
+
+    def show_level_up_message(self):
+        """
+        Display a level up message
+        """
+        message = f"Level {self.level}!"
+        text = self.font.render(message, True, (255, 255, 0))
+        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        self.screen.blit(text, text_rect)
+        pygame.display.flip()
+        pygame.time.wait(2000)  # Mostrar el mensaje por 2 segundos
 
     def spawn_enemies(self, level=1, difficulty="normal"):
         """
@@ -154,6 +198,16 @@ class Game:
         """
         self.screen.fill(BLACK)  # Set background color to black
         self.all_sprites.draw(self.screen)
+        
+        # Draw HUD
+        score_text = self.font.render(f"Score: {self.score}", True, WHITE)
+        level_text = self.font.render(f"Level: {self.level}", True, WHITE)
+        progress_text = self.font.render(f"Progress: {self.enemies_killed}/{self.level_threshold}", True, WHITE)
+        
+        self.screen.blit(score_text, (10, 10))
+        self.screen.blit(level_text, (10, 40))
+        self.screen.blit(progress_text, (10, 70))
+        
         pygame.display.flip()
 
     def handle_events(self):
