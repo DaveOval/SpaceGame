@@ -3,7 +3,7 @@ from settings import *
 from classes.bulletClass import Bullet
 
 class Ship(pygame.sprite.Sprite):
-    def __init__(self, x , y, speed, fire_rate, health, image_path, bullet_image, special_bullet_image, bullets_group):
+    def __init__(self, x , y, speed, fire_rate, health, image_path, bullet_image, special_bullet_image, bullets_group, all_sprites):
         super().__init__()
         self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(self.image, (50, 50)) # Scale the image to 50x50 pixels for the game window
@@ -15,6 +15,7 @@ class Ship(pygame.sprite.Sprite):
         self.bullet_image = bullet_image
         self.special_bullet_image = special_bullet_image
         self.bullets_group = bullets_group
+        self.all_sprites = all_sprites
         self.normal_sound = pygame.mixer.Sound("assets/sounds/normal_shoot.wav")
 
     def move(self):
@@ -41,6 +42,7 @@ class Ship(pygame.sprite.Sprite):
             bullet = Bullet(self.rect.centerx, self.rect.top, self.bullet_image, -8)
             self.normal_sound.play()
             self.bullets_group.add(bullet)
+            self.all_sprites.add(bullet)
             self.last_shot = current_time
 
     def special_shoot(self):
@@ -54,6 +56,8 @@ class Ship(pygame.sprite.Sprite):
             bullet_right = Bullet(self.rect.right - 10, self.rect.top, self.special_bullet_image, -8)
             self.bullets_group.add(bullet_left)
             self.bullets_group.add(bullet_right)
+            self.all_sprites.add(bullet_left)
+            self.all_sprites.add(bullet_right)
             self.last_shot = current_time
 
     def update(self):
@@ -70,8 +74,8 @@ LIGHT_BULLET = "assets/images/player/light_bullet.png"
 LIGHT_SPECIAL_BULLET = "assets/images/player/light_special_bullet.png"
 
 class LightShip(Ship):
-    def __init__(self, x, y, bullets_group):
-        super().__init__(x, y, 6, 200, 50, LIGHT_SHIP_IMAGE, LIGHT_BULLET, LIGHT_SPECIAL_BULLET, bullets_group)
+    def __init__(self, x, y, bullets_group, all_sprites):
+        super().__init__(x, y, 6, 200, 50, LIGHT_SHIP_IMAGE, LIGHT_BULLET, LIGHT_SPECIAL_BULLET, bullets_group, all_sprites)
         self.sound = pygame.mixer.Sound("assets/sounds/triple_shoot.wav")
     
     def special_shoot(self):
@@ -82,11 +86,18 @@ class LightShip(Ship):
         if current_time - self.last_shot > self.fire_rate * 2:
             print("Special shooting")
             self.sound.play()
-            self.bullets_group.add(
-                Bullet(self.rect.centerx, self.rect.top, self.special_bullet_image, -10),  # Center
-                Bullet(self.rect.left + 5, self.rect.top, self.special_bullet_image, -8, -3),  # Left
-                Bullet(self.rect.right - 5, self.rect.top, self.special_bullet_image, -8, 3)  # Right
-            )
+            bullet_center = Bullet(self.rect.centerx, self.rect.top, self.special_bullet_image, -10)
+            bullet_left = Bullet(self.rect.left + 5, self.rect.top, self.special_bullet_image, -8, -3)
+            bullet_right = Bullet(self.rect.right - 5, self.rect.top, self.special_bullet_image, -8, 3)
+            
+            self.bullets_group.add(bullet_center)
+            self.bullets_group.add(bullet_left)
+            self.bullets_group.add(bullet_right)
+            
+            self.all_sprites.add(bullet_center)
+            self.all_sprites.add(bullet_left)
+            self.all_sprites.add(bullet_right)
+            
             self.last_shot = current_time
 
 # Medium ship class
@@ -95,8 +106,8 @@ MEDIUM_BULLET = "assets/images/player/medium_bullet.png"
 MEDIUM_SPECIAL_BULLET = "assets/images/player/medium_special_bullet.png"
  
 class MediumShip(Ship):
-    def __init__(self, x, y, bullets_group):
-        super().__init__(x, y, 4, 400, 100, MEDIUM_SHIP_IMAGE, MEDIUM_BULLET, MEDIUM_SPECIAL_BULLET, bullets_group)
+    def __init__(self, x, y, bullets_group, all_sprites):
+        super().__init__(x, y, 4, 400, 100, MEDIUM_SHIP_IMAGE, MEDIUM_BULLET, MEDIUM_SPECIAL_BULLET, bullets_group, all_sprites)
         self.sound = pygame.mixer.Sound("assets/sounds/double_shoot.wav")
 
     def special_shoot(self):
@@ -118,8 +129,8 @@ HEAVY_BULLET = "assets/images/player/heavy_bullet.png"
 HEAVY_SPECIAL_BULLET = "assets/images/player/heavy_special_bullet.png"
 
 class HeavyShip(Ship):
-    def __init__(self, x, y, bullets_group):
-        super().__init__(x, y, 2, 600, 200, HEAVY_SHIP_IMAGE, HEAVY_BULLET, HEAVY_SPECIAL_BULLET, bullets_group)
+    def __init__(self, x, y, bullets_group, all_sprites):
+        super().__init__(x, y, 2, 600, 200, HEAVY_SHIP_IMAGE, HEAVY_BULLET, HEAVY_SPECIAL_BULLET, bullets_group, all_sprites)
         self.sound = pygame.mixer.Sound("assets/sounds/laser.wav")
 
     def special_shoot(self):

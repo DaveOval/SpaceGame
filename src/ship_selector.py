@@ -106,7 +106,6 @@ def select_ship():
                     selected = (selected - 1) % len(ships)
                 elif event.key == pygame.K_RETURN:
                     click_sound.play()
-                    bullets_group = pygame.sprite.Group()
-                    return ships[selected]["class"](WIDTH // 2, HEIGHT - 100, bullets_group)
+                    return ships[selected]["class"]
 
         clock.tick(FPS)

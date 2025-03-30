@@ -10,14 +10,15 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(GAME_NAME)
 
-        # Initialize player ship
-        self.selected_ship = selected_ship_class
-
         # Groups to manage all game sprites
-        self.all_sprites = pygame.sprite.Group(self.selected_ship)
+        self.all_sprites = pygame.sprite.Group()
         self.bullets_group = pygame.sprite.Group()
         self.enemies_group = pygame.sprite.Group()
         self.obstacles_group = pygame.sprite.Group()
+
+        # Initialize player ship
+        self.selected_ship = selected_ship_class(WIDTH // 2, HEIGHT - 100, self.bullets_group, self.all_sprites)
+        self.all_sprites.add(self.selected_ship)
 
         self.clock = pygame.time.Clock()
         self.running = True
