@@ -15,7 +15,6 @@ if __name__ == "__main__":
     if action == "play":
         # First we need to select the ship
         selected_ship = select_ship()
-        print(selected_ship)
         game = Game(selected_ship)
         game.run()
 

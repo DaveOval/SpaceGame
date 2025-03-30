@@ -180,7 +180,6 @@ class Game:
         """
         Display game over message and stop the game loop.
         """
-        print("Game Over")
         self.running = False
 
     def update(self):

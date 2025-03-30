@@ -6,12 +6,12 @@ class Ship(pygame.sprite.Sprite):
     def __init__(self, x , y, speed, fire_rate, health, image_path, bullet_image, special_bullet_image, bullets_group, all_sprites):
         super().__init__()
         self.image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(self.image, (50, 50)) # Scale the image to 50x50 pixels for the game window
+        self.image = pygame.transform.scale(self.image, (50, 50)) 
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
-        self.fire_rate = fire_rate # Store the fire rate of the ship
+        self.fire_rate = fire_rate 
         self.health = health
-        self.last_shot = pygame.time.get_ticks() # Store the time of the last shot fired 
+        self.last_shot = pygame.time.get_ticks() 
         self.bullet_image = bullet_image
         self.special_bullet_image = special_bullet_image
         self.bullets_group = bullets_group
@@ -38,7 +38,6 @@ class Ship(pygame.sprite.Sprite):
         """
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.fire_rate:
-            print("Shooting")
             bullet = Bullet(self.rect.centerx, self.rect.top, self.bullet_image, -8)
             self.normal_sound.play()
             self.bullets_group.add(bullet)
@@ -50,8 +49,7 @@ class Ship(pygame.sprite.Sprite):
         Method to shoot special bullets from the ship
         """
         current_time = pygame.time.get_ticks()
-        print("Special shooting")
-        if current_time - self.last_shot > self.fire_rate * 2:  # Mayor tiempo de recarga
+        if current_time - self.last_shot > self.fire_rate * 2:  
             bullet_left = Bullet(self.rect.left + 10, self.rect.top, self.special_bullet_image, -8)
             bullet_right = Bullet(self.rect.right - 10, self.rect.top, self.special_bullet_image, -8)
             self.bullets_group.add(bullet_left)
@@ -63,9 +61,9 @@ class Ship(pygame.sprite.Sprite):
     def update(self):
         self.move()
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:  # Shoot with SPACE
+        if keys[pygame.K_SPACE]:  
             self.shoot()
-        if keys[pygame.K_LCTRL]:  # Shoot special bullets with LCTRL
+        if keys[pygame.K_LCTRL]:  
             self.special_shoot()
 
 # Ligh ship class
@@ -84,7 +82,6 @@ class LightShip(Ship):
         """
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot > self.fire_rate * 2:
-            print("Special shooting")
             self.sound.play()
             bullet_center = Bullet(self.rect.centerx, self.rect.top, self.special_bullet_image, -10)
             bullet_left = Bullet(self.rect.left + 5, self.rect.top, self.special_bullet_image, -8, -3)
